@@ -1,4 +1,4 @@
-import cherrypy
+import tornado
 import sqlite3
 from time import sleep
 
@@ -7,7 +7,7 @@ databaseName = "Database/students.db"
 
 class StudentManagement(object):
 
-    @cherrypy.expose
+    @tornado.expose
     def login(self, errorValue=""):
         optionalString = ""
         if errorValue != "":
@@ -70,7 +70,7 @@ class StudentManagement(object):
             </body>
         </html>"""
 
-    @cherrypy.expose
+    @tornado.expose
     def userLogin(self, username, password):
         conn = sqlite3.connect(databaseName)
         c = conn.cursor()
@@ -90,7 +90,7 @@ class StudentManagement(object):
         print
         "Incorrect ID! If you are not a user, please register here."
 
-    @cherrypy.expose
+    @tornado.expose
     def index(self):
         return """
         <html>
@@ -130,7 +130,7 @@ class StudentManagement(object):
             </body>
         </html>"""
 
-    @cherrypy.expose
+    @tornado.expose
     def generateStudentTable(self):
         table = """
         <html>
@@ -176,7 +176,7 @@ class StudentManagement(object):
         conn.close()
         return table + "</table></div></body></html>"
 
-    @cherrypy.expose
+    @tornado.expose
     def new(self, errorValue=""):
         # Created optionalString so that the error only shows up in the case of an error
         optionalString = ""
@@ -292,7 +292,7 @@ class StudentManagement(object):
         </html>
         """
 
-    @cherrypy.expose
+    @tornado.expose
     def createStudent(self, rollno, fname, lname, gpa, creditHours, gender, phone, course):
         conn = sqlite3.connect(databaseName)
         c = conn.cursor()
@@ -317,7 +317,7 @@ class StudentManagement(object):
 
         return self.index()
 
-    @cherrypy.expose
+    @tornado.expose
     def delete(self, errorValue=""):
         optionalString = ""
         if errorValue != "":
@@ -371,7 +371,7 @@ class StudentManagement(object):
             </div>
         </body></html>"""
 
-    @cherrypy.expose
+    @tornado.expose
     def removeStudent(self, rollno):
         conn = sqlite3.connect(databaseName)
         c = conn.cursor()
@@ -385,7 +385,7 @@ class StudentManagement(object):
         # If we never find a student with rollno, we reload the "delete" page with an error
         return self.delete(errorValue="There is no student with an Roll Number #" + str(rollno) + ".")
 
-    @cherrypy.expose
+    @tornado.expose
     def update(self, errorValue=""):
         optionalString = ""
         if errorValue != "":
@@ -445,7 +445,7 @@ class StudentManagement(object):
                 </div>
             </body></html>"""
 
-    @cherrypy.expose
+    @tornado.expose
     def searchStudent(self, rollno):
         conn = sqlite3.connect(databaseName)
         c = conn.cursor()
@@ -519,7 +519,7 @@ class StudentManagement(object):
             # If we never find a student with rollno, we reload the "delete" page with an error
         return self.update(errorValue="There is no student with an Roll Number #" + str(rollno) + ".")
 
-    @cherrypy.expose
+    @tornado.expose
     def updateStudent(self, rollno, fname, lname, gpa, creditHours, gender, phone, course):
         conn = sqlite3.connect(databaseName)
         c = conn.cursor()
@@ -530,7 +530,7 @@ class StudentManagement(object):
 
         return self.index
 
-    @cherrypy.expose
+    @tornado.expose
     def department(self):
         return """
                 <html>
@@ -565,7 +565,7 @@ class StudentManagement(object):
                     </body>
                 </html>"""
 
-    @cherrypy.expose
+    @tornado.expose
     def generateDeptTable(self):
         conn = sqlite3.connect(databaseName)
         c = conn.cursor()
@@ -615,4 +615,4 @@ class StudentManagement(object):
 
 
 if __name__ == '__main__':
-    cherrypy.quickstart(StudentManagement(), '/')
+    tornado.quickstart(StudentManagement(), '/')
