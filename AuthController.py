@@ -1,4 +1,5 @@
 import cherrypy
+import tornado
 
 
 SESSION_KEY = '_cp_username'
@@ -19,10 +20,13 @@ def check_auth(*args, **kwargs):
     is not None, a login is required and the entry is evaluated as a list of
     conditions that the user must fulfill"""
     conditions = cherrypy.request.config.get('auth.require', None)
+     conditions = tornado.request.config.get('auth.require', None)
     if conditions is not None:
         username = cherrypy.session.get(SESSION_KEY)
+         username = tornado.session.get(SESSION_KEY)
         if username:
             cherrypy.request.login = username
+            tornado.request.login = username
             for condition in conditions:
                 # A condition is just a callable that returns true or false
                 if not condition():
@@ -31,7 +35,7 @@ def check_auth(*args, **kwargs):
             raise cherrypy.HTTPRedirect("/auth/login")
 
 
-cherrypy.tools.auth = cherrypy.Tool('before_handler', check_auth)
+tornado.tools.auth = tornado.Tool('before_handler', check_auth)
 
 
 def require(*conditions):
