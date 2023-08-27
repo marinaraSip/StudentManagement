@@ -1,4 +1,4 @@
-import tornado
+import cherrypy
 
 
 SESSION_KEY = '_cp_username'
@@ -18,23 +18,23 @@ def check_auth(*args, **kwargs):
     """A tool that looks in config for 'auth.require'. If found and it
     is not None, a login is required and the entry is evaluated as a list of
     conditions that the user must fulfill"""
-    conditions = tornado.request.config.get('auth.require', None)
-     conditions = tornado.request.config.get('auth.require', None)
+    conditions = cherrypy.request.config.get('auth.require', None)
+     conditions = cherrypy.request.config.get('auth.require', None)
     if conditions is not None:
-        username = tornado.session.get(SESSION_KEY)
-         username = tornado.session.get(SESSION_KEY)
+        username = cherrypy.session.get(SESSION_KEY)
+         username = cherrypy.session.get(SESSION_KEY)
         if username:
-            tornado.request.login = username
-            tornado.request.login = username
+            cherrypy.request.login = username
+            cherrypy.request.login = username
             for condition in conditions:
                 # A condition is just a callable that returns true or false
                 if not condition():
-                    raise tornado.HTTPRedirect("/auth/login")
+                    raise cherrypy.HTTPRedirect("/auth/login")
         else:
-            raise tornado.HTTPRedirect("/auth/login")
+            raise cherrypy.HTTPRedirect("/auth/login")
 
 
-tornado.tools.auth = tornado.Tool('before_handler', check_auth)
+cherrypy.tools.auth = cherrypy.Tool('before_handler', check_auth)
 
 
 def require(*conditions):
@@ -54,20 +54,20 @@ def require(*conditions):
 # Conditions are callables that return True
 # if the user fulfills the conditions they define, False otherwise
 #
-# They can access the current username as tornado.request.login
+# They can access the current username as cherrypy.request.login
 #
 # Define those at will however suits the application.
 
 def member_of(groupname):
     def check():
         # replace with actual check if <username> is in <groupname>
-        return tornado.request.login == 'mzfr' and groupname == 'admin'
+        return cherrypy.request.login == 'mzfr' and groupname == 'admin'
 
     return check
 
 
 def name_is(reqd_username):
-    return lambda: reqd_username == tornado.request.login
+    return lambda: reqd_username == cherrypy.request.login
 
 
 # These might be handy
@@ -167,7 +167,7 @@ class AuthController(object):
             </body>
         </html>""" % locals()
 
-    @tornado.expose
+    @cherrypy.expose
     def login(self, username=None, password=None, from_page="/"):
         if username is None or password is None:
             return self.get_loginform("", from_page=from_page)
@@ -176,16 +176,16 @@ class AuthController(object):
         if error_msg:
             return self.get_loginform(username, error_msg, from_page)
         else:
-            tornado.session[SESSION_KEY] = tornado.request.login = username
+            cherrypy.session[SESSION_KEY] = cherrypy.request.login = username
             self.on_login(username)
-            raise tornado.HTTPRedirect(from_page or "/")
+            raise cherrypy.HTTPRedirect(from_page or "/")
 
-    @tornado.expose
+    @cherrypy.expose
     def logout(self, from_page="/"):
-        sess = tornado.session
+        sess = cherrypy.session
         username = sess.get(SESSION_KEY, None)
         sess[SESSION_KEY] = None
         if username:
-            tornado.request.login = None
+            cherrypy.request.login = None
             self.on_logout(username)
-        raise tornado.HTTPRedirect(from_page or "/")
+        raise cherrypy.HTTPRedirect(from_page or "/")
