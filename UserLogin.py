@@ -1,5 +1,5 @@
 #!python
-import cherrypy
+import tornado
 
 from AuthController import AuthController, require, member_of, name_is
 from StudentManagement import StudentManagement
@@ -13,7 +13,7 @@ class RestrictedArea:
         'auth.require': [member_of('admin')]
     }
 
-    @cherrypy.expose
+    @tornado.expose
     def index(self):
         return """This is the admin only area."""
 
@@ -28,7 +28,7 @@ class Root:
 
     restricted = RestrictedArea()
 
-    @cherrypy.expose
+    @tornado.expose
     @require()
     def index(self):
         sm = StudentManagement()
@@ -38,4 +38,4 @@ class Root:
 
 
 if __name__ == '__main__':
-    cherrypy.quickstart(Root())
+    tornado.quickstart(Root())
