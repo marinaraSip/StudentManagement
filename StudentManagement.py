@@ -594,7 +594,7 @@ class StudentManagement(object):
                                 </tr>
                             </thead>
                 """
-        query = """SELECT RollNo, FirstName, LastName,paasword, DeptName, CourseName from Students s, Course c, Department d where c.CourseId=s.CourseId and d.DeptId=c.DeptId order by d.DeptName"""
+        query = """SELECT RollNo, FirstName, LastName,password, DeptName, CourseName from Students s, Course c, Department d where c.CourseId=s.CourseId and d.DeptId=c.DeptId order by d.DeptName"""
         c.execute(query)
         result = c.fetchall()
         for row in result:
