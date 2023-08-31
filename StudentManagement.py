@@ -293,7 +293,7 @@ class StudentManagement(object):
         """
 
     @cherrypy.expose
-    def createStudent(self, rollno, fname, lname, gpa, creditHours, gender, phone, course):
+    def createStudent(self, rollno, fname, emailAddress, emailId, Password,lname, gpa, creditHours, gender, phone, course):
         conn = sqlite3.connect(databaseName)
         c = conn.cursor()
         for row in c.execute("SELECT RollNo from Students"):
